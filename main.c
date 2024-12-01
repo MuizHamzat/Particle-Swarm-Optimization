@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "OF_lib.h"
 #include "utility.h"
 
@@ -53,6 +54,10 @@ int main(int argc, char **argv) {
     printf("Lower Bound for all variables: %lf\n", lower_bound);
     printf("Upper Bound for all variables: %lf\n", upper_bound);
 
+    printf("------------------------------------------------\n");
+    printf("PSI is initialized with:\n");
+    printf("Number of particles = %i\n", NUM_PARTICLES);
+    printf("Number of iterations = %i\n", MAX_ITERATIONS);
     
     // bounds[j] stores the lower and upper bound for variable j
     Bound *bounds = (Bound *)malloc(NUM_VARIABLES*sizeof(Bound));
@@ -69,10 +74,18 @@ int main(int argc, char **argv) {
     double *best_position = (double *)malloc(NUM_VARIABLES*sizeof(double));
     
     // CODE: measure the CPU time only for the following pso function
+    clock_t start, end;
 
+    start = clock();
     double best_fitness = pso(objective_function, NUM_VARIABLES, bounds, NUM_PARTICLES, MAX_ITERATIONS, best_position);
+    end = clock();
+
+    double cpuTime = ((double)(end-start))/CLOCKS_PER_SEC;
 
     // Print results
+    printf("\nResults\n");
+    printf("------------------------------------------------\n");
+    printf("CPU time: %.2lf seconds\n", cpuTime);
     // best_fitness is the objective function value (fitness) for the final global best solution, this is the lowest fitness achieved
     printf("Optimal fitness: %lf\n", best_fitness);
     printf("Optimal position: ");
