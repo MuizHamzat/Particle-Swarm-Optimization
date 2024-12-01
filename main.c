@@ -55,12 +55,12 @@ int main(int argc, char **argv) {
     printf("Upper Bound for all variables: %lf\n", upper_bound);
 
     printf("------------------------------------------------\n");
-    printf("PSI is initialized with:\n");
+    printf("PSO is initialized with:\n");
     printf("Number of particles = %i\n", NUM_PARTICLES);
     printf("Number of iterations = %i\n", MAX_ITERATIONS);
     
     // bounds[j] stores the lower and upper bound for variable j
-    Bound *bounds = (Bound *)malloc(NUM_VARIABLES*sizeof(Bound));
+    Bound *bounds = (Bound *)malloc((long unsigned int)NUM_VARIABLES*sizeof(Bound));
 
     // The following loop means all the vairables have the same lower and upper bounds
     for (int i = 0; i < NUM_VARIABLES; i++)
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
     
 
     // best_position is sent to pso and the final global best solution is save into this array
-    double *best_position = (double *)malloc(NUM_VARIABLES*sizeof(double));
+    double *best_position = (double *)malloc((long unsigned int)NUM_VARIABLES*sizeof(double));
     
     // CODE: measure the CPU time only for the following pso function
     clock_t start, end;

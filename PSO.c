@@ -13,16 +13,16 @@ double random_double(double min, double max) {
 
 double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bounds, int NUM_PARTICLES, int MAX_ITERATIONS, double *best_position) {
 
-    float w = 0.7;
-    float c1 = 1.5;
-    float c2 = 1.5;
+    double w = 0.7;
+    double c1 = 1.5;
+    double c2 = 1.5;
 
     //Allocate memory for number of particles
-    double** x = malloc(sizeof(double*) * NUM_PARTICLES);
-    double** v = malloc(sizeof(double*) * NUM_PARTICLES);    
-    double** p = malloc(sizeof(double*) * NUM_PARTICLES);
-    double* fpBest = malloc(sizeof(double) * NUM_PARTICLES);
-    double* g = malloc(sizeof(double) * NUM_VARIABLES);
+    double** x = malloc(sizeof(double*) * (long unsigned int)NUM_PARTICLES);
+    double** v = malloc(sizeof(double*) * (long unsigned int)NUM_PARTICLES);    
+    double** p = malloc(sizeof(double*) * (long unsigned int)NUM_PARTICLES);
+    double* fpBest = malloc(sizeof(double) * (long unsigned int)NUM_PARTICLES);
+    double* g = malloc(sizeof(double) * (long unsigned int)NUM_VARIABLES);
 
     //Check if memory allocation failed
     if (!x || !v || !p || !fpBest || !g){
@@ -33,9 +33,9 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
     //Allocate memory for number of variables for each particle
     int i,j;
     for (i=0; i < NUM_PARTICLES; i++){
-        x[i] = malloc(sizeof(double) * NUM_VARIABLES);        
-        v[i] = malloc(sizeof(double) * NUM_VARIABLES);
-        p[i] = malloc(sizeof(double) * NUM_VARIABLES);
+        x[i] = malloc(sizeof(double) * (long unsigned int)NUM_VARIABLES);        
+        v[i] = malloc(sizeof(double) * (long unsigned int)NUM_VARIABLES);
+        p[i] = malloc(sizeof(double) * (long unsigned int)NUM_VARIABLES);
 
         //Check if memory allocation failed
         if (!x[i] || !v[i] || !p[i]){
@@ -67,7 +67,9 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
 
     //PSO Loop
     int iter;
-    for (iter=0; iter < MAX_ITERATIONS; iter++){
+    int stopper = 0;
+    for (iter=0; iter < MAX_ITERATIONS && stopper < 150; iter++){
+        double prevfgBest = fgBest;
         for (i=0; i < NUM_PARTICLES; i++){
             for (j=0; j < NUM_VARIABLES; j++){
                 double r1 = random_double(0,1);
@@ -97,6 +99,16 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
                 }
             }
         }
+
+        if (fgBest == prevfgBest){
+                stopper++;
+                if (stopper >= 150){
+                    printf("Stopped early at iteration #%i due to stagnation of best global fitness value\n", iter+1);
+                    break;
+                }
+            } else {
+                stopper = 0;
+            }
         
     }
 
