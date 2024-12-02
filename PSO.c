@@ -14,8 +14,10 @@ double random_double(double min, double max) {
 double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bounds, int NUM_PARTICLES, int MAX_ITERATIONS, double *best_position) {
 
     double w = 0.7;
+
     double c1 = 1.5;
     double c2 = 1.5;
+    double vmax = 0.1*(bounds->upperBound - bounds->lowerBound);
 
     //Allocate memory for number of particles
     double** x = malloc(sizeof(double*) * (long unsigned int)NUM_PARTICLES);
@@ -68,14 +70,18 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
     //PSO Loop
     int iter;
     int stopper = 0;
-    for (iter=0; iter < MAX_ITERATIONS && stopper < 150; iter++){
+    for (iter=0; iter < MAX_ITERATIONS; iter++){
         double prevfgBest = fgBest;
         for (i=0; i < NUM_PARTICLES; i++){
             for (j=0; j < NUM_VARIABLES; j++){
                 double r1 = random_double(0,1);
                 double r2 = random_double(0,1);
-                //Update velocity and position
+                //Update velocity
                 v[i][j] = w *v[i][j]+c1*r1*(p[i][j]-x[i][j])+c2*r2*(g[j]-x[i][j]);
+                //Clamp velocity to prevent particles from overshooting optimal regions
+                if (v[i][j] > vmax){v[i][j] = vmax;}
+                if (v[i][j] < -vmax){v[i][j] = -vmax;}
+                //Update position
                 x[i][j] += v[i][j];
                 //Clamp x[i][j] within bounds
                 if (x[i][j] < bounds[j].lowerBound) {x[i][j] = bounds[j].lowerBound;}
@@ -102,7 +108,7 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
 
         if (fgBest == prevfgBest){
                 stopper++;
-                if (stopper >= 150){
+                if (stopper >= 200){
                     printf("Stopped early at iteration #%i due to stagnation of best global fitness value\n", iter+1);
                     break;
                 }
