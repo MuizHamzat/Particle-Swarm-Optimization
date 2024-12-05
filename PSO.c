@@ -16,8 +16,9 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
 
     double w_max = 0.9;
     double w_min = 0.4;
-    double c1 = 2.0;
-    double c2 = 2.0;
+    double w = 0.7;
+    double c1 = 1.5;
+    double c2 = 1.5;
     double initial_vmax = 0.1 * (bounds->upperBound - bounds->lowerBound);
 
     //Allocate memory for number of particles
@@ -73,7 +74,7 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
     int stagnationCounter[NUM_PARTICLES];
     for (iter=0; iter < MAX_ITERATIONS; iter++){
         // Dynamic inertia weight
-        double w = w_max - ((w_max - w_min) * iter / MAX_ITERATIONS);
+        //double w = w_max - ((w_max - w_min) * iter / MAX_ITERATIONS);
 
         if (iter % 100 == 0){
             printf("Iteration #%i: OF = %lf\nVariables: { ", iter, fgBest);
@@ -99,12 +100,12 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
                 v[i][j] = w *v[i][j]+c1*r1*(p[i][j]-x[i][j])+c2*r2*(g[j]-x[i][j]);
 
                 // Adaptive velocity clamping
-                if (v[i][j] > vmax) {
-                    v[i][j] = vmax;
-                }
-                if (v[i][j] < -vmax) {
-                    v[i][j] = -vmax;
-                }
+                // if (v[i][j] > vmax) {
+                //     v[i][j] = vmax;
+                // }
+                // if (v[i][j] < -vmax) {
+                //     v[i][j] = -vmax;
+                // }
 
                 //Update position
                 x[i][j] += v[i][j];
@@ -136,14 +137,14 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
 
         // Adaptive parameter adjustment based on performance
         for (i = 0; i < NUM_PARTICLES; i++) {
-            if (stagnationCounter[i] > 50) {
+            if (stagnationCounter[i] > 100) {
                 // Increase cognitive component to encourage exploration
-                c1 = 3.0;
+                c1 = 2.0;
                 c2 = 1.0;
             } else {
                 // Reset to default values
-                c1 = 2.0;
-                c2 = 2.0;
+                c1 = 1.5;
+                c2 = 1.5;
             }
         }
 
@@ -182,12 +183,3 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
 
     return fgBest;
 }
-
-//q: I can't seem to get the global minimum of 0 for the rastrigin function. I've tried dynamically adjusting the inertia weight and vmax, but it doesn't seem to help. Increasing the number of iterations doesn't seem to help either. What can I do to improve the performance of the PSO algorithm?
-//a: The Rastrigin function is a multimodal function with many local minima. The PSO algorithm is not guaranteed to find the global minimum for such functions due to its stochastic nature. To improve the performance of the PSO algorithm for the Rastrigin function, you can try the following strategies:
-//1. Increase the number of particles: Increasing the number of particles can help the algorithm explore the search space more effectively and increase the chances of finding the global minimum.
-//2. Tune the algorithm parameters: Experiment with different values for the inertia weight, cognitive and social parameters, and velocity clamping to find the optimal settings for the Rastrigin function.
-//3. Implement adaptive parameter adjustment: Implement adaptive mechanisms to adjust the algorithm parameters dynamically during the optimization process based on the performance of the algorithm.
-//4. Use a different optimization algorithm: If the PSO algorithm is not performing well for the Rastrigin function, consider using other optimization algorithms such as Genetic Algorithms, Differential Evolution, or Simulated Annealing.
-//5. Run multiple trials: Run the PSO algorithm multiple times with different random initializations to increase the chances of finding the global minimum of the Rastrigin function.
-//6. Implement local search: Combine the PSO algorithm with a local search method to refine the solutions found by the algorithm and improve the convergence to the global minimum.
