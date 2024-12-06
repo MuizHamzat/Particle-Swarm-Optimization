@@ -13,9 +13,7 @@ double random_double(double min, double max) {
 
 
 double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bounds, int NUM_PARTICLES, int MAX_ITERATIONS, double *best_position) {
-
-    double w_max = 0.9;
-    double w_min = 0.4;
+    //PSO Parameters
     double w = 0.7;
     double c1 = 1.5;
     double c2 = 1.5;
@@ -70,13 +68,14 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
     }
 
     //PSO Loop
-    int iter;
-    int stopper = 0;
+    int iter; //Iteration counter
+    int stopper = 0; //Counter to stop the loop if the global best fitness value doesn't change for a certain number of iterations (stagnates)
     double prev_fgBest;
-    int stagnationCounter[NUM_PARTICLES];
+    int stagnationCounter[NUM_PARTICLES]; //Counter to keep track of how many iterations a particle's personal best fitness value hasn't changed
     for (iter=0; iter < MAX_ITERATIONS; iter++){
         prev_fgBest = fgBest;
 
+        //Print out the global best fitness value and position every 100 iterations
         if (iter % 100 == 0){
             printf("Iteration #%i: OF = %lf\nVariables: { ", iter, fgBest);
             for (int j = 0; j < NUM_VARIABLES; j++) {
@@ -93,21 +92,13 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
         avg_fitness /= NUM_PARTICLES;
         double vmax = initial_vmax * (1.0 - (fgBest / avg_fitness));
 
+        //Update each particle's position and velocity
         for (i=0; i < NUM_PARTICLES; i++){
             for (j=0; j < NUM_VARIABLES; j++){
                 double r1 = random_double(0,1);
                 double r2 = random_double(0,1);
                 //Update velocity
                 v[i][j] = w *v[i][j]+c1*r1*(p[i][j]-x[i][j])+c2*r2*(g[j]-x[i][j]);
-
-                // Adaptive velocity clamping
-                // if (v[i][j] > vmax) {
-                //     v[i][j] = vmax;
-                // }
-                // if (v[i][j] < -vmax) {
-                //     v[i][j] = -vmax;
-                // }
-
                 //Update position
                 x[i][j] += v[i][j];
                 //Clamp x[i][j] within bounds
@@ -149,20 +140,7 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
             }
         }
 
-        // Check for convergence
-        int convergence = 1;
-        for (i = 0; i < NUM_PARTICLES; i++) {
-            //printf("Stagnation counter for particle %i: %i\n", i, stagnationCounter[i]);
-            if (stagnationCounter[i] < 100) {
-                convergence = 0;
-                break;
-            }
-        }
-        if (convergence) {
-            printf("Converged at iteration #%i\n", iter + 1);
-            break;
-        }
-
+        //Stopping condition: If the global best fitness value doesn't change for 500 iterations, stop the loop
         if (fabs(prev_fgBest-fgBest) < 1e-15) {
             stopper++;
         } else {
