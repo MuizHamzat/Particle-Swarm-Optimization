@@ -71,10 +71,11 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
 
     //PSO Loop
     int iter;
+    int stopper = 0;
+    double prev_fgBest;
     int stagnationCounter[NUM_PARTICLES];
     for (iter=0; iter < MAX_ITERATIONS; iter++){
-        // Dynamic inertia weight
-        //double w = w_max - ((w_max - w_min) * iter / MAX_ITERATIONS);
+        prev_fgBest = fgBest;
 
         if (iter % 100 == 0){
             printf("Iteration #%i: OF = %lf\nVariables: { ", iter, fgBest);
@@ -151,6 +152,7 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
         // Check for convergence
         int convergence = 1;
         for (i = 0; i < NUM_PARTICLES; i++) {
+            //printf("Stagnation counter for particle %i: %i\n", i, stagnationCounter[i]);
             if (stagnationCounter[i] < 100) {
                 convergence = 0;
                 break;
@@ -158,6 +160,17 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
         }
         if (convergence) {
             printf("Converged at iteration #%i\n", iter + 1);
+            break;
+        }
+
+        if (fabs(prev_fgBest-fgBest) < 1e-15) {
+            stopper++;
+        } else {
+            stopper = 0;
+        }
+
+        if (stopper == 500) {
+            printf("Stopped at iteration #%i\n", iter + 1);
             break;
         }
     }
