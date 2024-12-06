@@ -1,8 +1,12 @@
-all: pso
+CC = gcc
+CFLAGS = -lm -O3 -Wall -Wextra -Wconversion -Wsign-conversion
+SRC = main.c OF_lib.h OF.c PSO.c utility.h
+TARGET = pso
 
-pso: main.c OF_lib.h OF.c PSO.c utility.h
-	gcc -o pso main.c OF_lib.h OF.c PSO.c utility.h -lm -O3 -Wall -Wextra -Wconversion -Wsign-conversion
+all: $(TARGET)
 
+$(TARGET): $(SRC)
+	$(CC) -o $(TARGET) $(SRC) $(CFLAGS)
 
 clean:
-	rm -f pso
+	rm -f $(TARGET)

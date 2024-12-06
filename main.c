@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
     printf("------------------------------------------------\n");
     printf("PSO is initialized with:\n");
     printf("Number of particles = %i\n", NUM_PARTICLES);
-    printf("Number of iterations = %i\n", MAX_ITERATIONS);
+    printf("Number of iterations = %i\n\n", MAX_ITERATIONS);
     
     // bounds[j] stores the lower and upper bound for variable j
     Bound *bounds = (Bound *)malloc((long unsigned int)NUM_VARIABLES*sizeof(Bound));

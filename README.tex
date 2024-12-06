@@ -203,13 +203,9 @@
 	
 	\section{Introduction}
 	
-	
-	
-	%This is a linked based reference example: \href{https://www.sfu.ca/~ssurjano/optimization.html}{here}.
-	
-	
-	
-	
+	For this assignment, we were tasked with using Partice Swarm Optimization (PSO) to optimize a set of functions. The PSO algorithm is a population-based optimization algorithm that is inspired by the social behavior of birds flocking or fish schooling. The behavior of the particles in the swarm is influenced by their own best position and the best position of the entire swarm. The particles work together to find the optimal fitness of the objective function. In this assignment, we will implement the PSO algorithm in C and analyze the performance of the algorithm by varying the number of variables (dimensions) and particles.
+
+	The objective functions analyzed in this assignment can be found \href{https://www.sfu.ca/~ssurjano/optimization.html}{here}.
 	
 	
 
@@ -218,22 +214,23 @@
 	\section{Particle Swarm Optimization (PSO) Formulation}
 	
 	
-	This is an example of writing equations in Latex:
-	
-	\[
-	v_{ij}(t+1) = w \cdot v_{ij}(t) + c_1 \cdot r_1 \cdot (p_{ij} - x_{ij}(t)) + c_2 \cdot r_2 \cdot (g_j - x_{ij}(t))
-	\]
-	
+	Each particle has a position and velocity in the search space. The position of the particle is represented by a vector \(x_i(t)\) and the velocity of the particle is represented by a vector \(v_i(t)\). Initially, the positions and velocities of each particle are random values, and they are updated using the following equations:
 	
 	\[
 	x_{ij}(t+1) = x_{ij}(t) + v_{ij}(t+1)
 	\]
+
+	\[
+	v_{ij}(t+1) = w \cdot v_{ij}(t) + c_1 \cdot r_1 \cdot (p_{ij} - x_{ij}(t)) + c_2 \cdot r_2 \cdot (g_j - x_{ij}(t))
+	\]
+
 	
+	Each particle also has a personal best position, which is the position that gives the best fitness value for that particle. The personal best position is represented by a vector \(p_i\). The global best position is the position that gives the best fitness value for the entire swarm. The global best position is represented by a vector \(g\). The personal best and global best positions are updated as follows:
 	
 	\begin{enumerate}
 		\item Evaluate the fitness of each particle at its new position: \(f(\mathbf{x}_i(t+1))\).
 		
-		\item  Update personal best:
+		\item Update personal best:
 		
 		\[
 		\mathbf{p}_i = 
@@ -243,7 +240,7 @@
 		\end{cases}
 		\]
 		
-		\item  Update global best:
+		Update global best:
 		
 		\[
 		\mathbf{g} = \arg\min_{\mathbf{p}_i} f(\mathbf{p}_i).
@@ -251,40 +248,48 @@
 	\end{enumerate}
 	
 	
+	The algorithm continually updates these values until a stopping criterion is met. For this assignment, the program will stop when the global best fitness value does not change for 500 iterations, or if the entered number of iterations has been reached. It will then print out the global best fitness value and the global best position, as well as the CPU time taken to calculate the optimal fitness value.
 	
-	
-	
-	This is an example of inline codes:
-	
-	{\scriptsize \codebox{./pso <ObjectiveFunctionName> <NUM\_VARIABLES> <LowerBound> <UpperBound> <NUM\_PARTICLES> <MAX\_ITERATIONS>}}
-	
-	
-	For example \codebox{./pso griewank 8 -50 50 500 1000} is within the text.
-	
-	This is an example how I create a box to show the outputs from terminals:
+
+
+    For example, if the executeable file was ran with the following arguments:
+    
+    \codebox{./pso griewank 10 -600 600 20000 1000} 
+    
+    then the following woud be printed to the terminal:
 	
 	\begin{mdframed}[style=myboxstyleTerminal1]
 		\footnotesize
 		\begin{verbatim}
 			
 			Objective Function: griewank
-			The number of variables: 8
-			Lower Bound for all variables: -50.000000
-			Upper Bound for all variables:  50.000000
+			The number of variables: 10
+			Lower Bound for all variables: -600.000000
+			Upper Bound for all variables:  600.000000
 			------------------------------------------------
 			PSO with is initiated:
-			Number of particles  = 500
-			Number of iterations = 1000 
+			Number of particles  = 20000
+			Number of iterations = 10000
+
+			Iteration #0: OF = 48.834937
+			Variables: { 137.037874 -77.413037 
+    -109.854260 69.559942 226.114482 79.516750 
+    -140.576342 -260
+
+			Stopped at iteration #965
+
 			
 			Results
 			------------------------------------------------
-			CPU time: 0.01 seconds
-			Optimal fitness: 0.032006
-			Optimal position: 3.1400 -4.4384 -0.0000 6.2706 -0.0000 7.6722 0.0000 -0.0000
+			CPU time: 9.27 seconds
+			Optimal fitness: 0.000000
+			Optimal position: 0.000000 -0.000000 -0.000000
+    0.000000 0.000000 -0.000000 0.000000 0.000000
+    -0.000000 0.000000
 		\end{verbatim}
 	\end{mdframed}
 	
-	These are the tables you need to fill out:
+	Finally, these are the tables of test cases. The tables show the optimal fitness value and the CPU time taken to calculate the optimal fitness value for each function, and are separated by the number of variables (dimensions) used in the functions.
 	
 	\begin{table}[H]
 		\caption{\codebox{NUM\_VARIABLES = 10} (or dimension $d=10$) in \textbf{all} functions}
@@ -360,61 +365,191 @@
 	\section{Appendix}
 	
 	\begin{lstlisting}[basicstyle=\small]
-		\\ this is a code box example, copy and paste your codes here
-	\end{lstlisting}
-	
-	\subsection{PSO Pseudo Code}\label{appendixC}
-	
-	You don't need to keep the following algorithm in your report. I'm just showing how you can create one:
-	
-	\begin{algorithm}[h!]
-		\caption{Particle Swarm Optimization (PSO)}
-		\begin{algorithmic}[1]
-			\State Initialize constants: $w \gets 0.7$, $c_1 \gets 1.5$, $c_2 \gets 1.5$ 
-			\State For $i \in [1, \text{NUM\_PARTICLES}]$, $j \in [1, \text{NUM\_VARIABLES}]$, allocate memory for:
-			\State \hspace{\algorithmicindent} $\mathbf{x}[i][j]$, $\mathbf{v}[i][j]$, $\mathbf{p}[i][j]$, $f_\text{pbest}[i]$, $\mathbf{g}$
-			
-			\State \textbf{Initialization:}
-			$f_\text{gbest} \gets \infty$
-			\For{$i \gets 1$ to $\text{NUM\_PARTICLES}$}
-			\For{$j \gets 1$ to $\text{NUM\_VARIABLES}$}
-			\State $\mathbf{x}[i][j]$, $\mathbf{v}[i][j]$, and $\mathbf{p}[i][j]$
-			\EndFor
-			\State $f_\text{pbest}[i] \gets \text{objective\_function}(\text{NUM\_VARIABLES}, \mathbf{x}[i])$
-			\If{$f_\text{pbest}[i] < f_\text{gbest}$}
-			\State $f_\text{gbest} \gets f_\text{pbest}[i]$
-			\State $\mathbf{g} \gets \mathbf{p}[i]$
-			\EndIf
-			\EndFor
-			
-			\State \textbf{PSO Loop:}
-			\For{$\text{iter} \gets 1$ to $\text{MAX\_ITERATIONS}$}
-			\For{$i \gets 1$ to $\text{NUM\_PARTICLES}$}
-			\For{$j \gets 1$ to $\text{NUM\_VARIABLES}$}
-			\State $r_1 \gets \text{random\_double}(0, 1)$, $r_2 \gets \text{random\_double}(0, 1)$
-			\State $\mathbf{v}[i][j] \gets w \cdot \mathbf{v}[i][j] + c_1 \cdot r_1 \cdot (\mathbf{p}[i][j] - \mathbf{x}[i][j]) + c_2 \cdot r_2 \cdot (\mathbf{g}[j] - \mathbf{x}[i][j])$
-			\State $\mathbf{x}[i][j] \gets \mathbf{x}[i][j] + \mathbf{v}[i][j]$
-			\State Clamp $\mathbf{x}[i][j]$ within bounds: 
-			\State \hspace{\algorithmicindent} $\mathbf{x}[i][j] \gets \max(\text{bounds}[j].\text{lowerBound}, \min(\text{bounds}[j].\text{upperBound}, \mathbf{x}[i][j]))$
-			\EndFor
-			\State $f \gets \text{objective\_function}(\text{NUM\_VARIABLES}, \mathbf{x}[i])$
-			\If{$f < f_\text{pbest}[i]$}
-			\State $f_\text{pbest}[i] \gets f$
-			\State $\mathbf{p}[i] \gets \mathbf{x}[i]$
-			\EndIf
-			\If{$f < f_\text{gbest}$}
-			\State $f_\text{gbest} \gets f$
-			\State $\mathbf{g} \gets \mathbf{x}[i]$
-			\EndIf
-			\EndFor
-			\EndFor
-			
-			\State Copy $\mathbf{g}$ to $\text{best\_position}$ and Free allocated memory
+		// ##### utility.h #####
+#ifndef UTILITY_H
+#define UTILITY_H
 
-			\State \Return $f_\text{gbest}$
-		\end{algorithmic}
-	\end{algorithm}
-	
-	
+// Function pointer type for objective functions
+typedef double (*ObjectiveFunction)(int, double *);
+
+typedef struct Bound{
+    double lowerBound;
+    double upperBound;
+}Bound;
+
+
+// Function prototypes
+double random_double(double min, double max);
+double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bounds, int NUM_PARTICLES, int MAX_ITERATIONS, double best_position[]);
+
+#endif // UTILITY_H
+
+// ##### PSO.c #####
+#include <stdio.h>
+#include <stdlib.h>
+#include <float.h>
+#include <math.h>
+#include "OF_lib.h"
+#include "utility.h"
+
+// Helper function to generate random numbers in a range
+double random_double(double min, double max) {
+    return min + (max - min) * ((double)rand() / RAND_MAX);
+}
+
+double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bounds, int NUM_PARTICLES, int MAX_ITERATIONS, double *best_position) {
+    //PSO Parameters
+    double w = 0.7;
+    double c1 = 1.5;
+    double c2 = 1.5;
+
+    //Allocate memory for number of particles
+    double** x = malloc(sizeof(double*) * (long unsigned int)NUM_PARTICLES);
+    double** v = malloc(sizeof(double*) * (long unsigned int)NUM_PARTICLES);    
+    double** p = malloc(sizeof(double*) * (long unsigned int)NUM_PARTICLES);
+    double* fpBest = malloc(sizeof(double) * (long unsigned int)NUM_PARTICLES);
+    double* g = malloc(sizeof(double) * (long unsigned int)NUM_VARIABLES);
+
+    //Check if memory allocation failed
+    if (!x || !v || !p || !fpBest || !g){
+                printf("Memory allocation failed. Exiting program.");
+                exit(1);
+            }
+    
+    //Allocate memory for number of variables for each particle
+    int i,j;
+    for (i=0; i < NUM_PARTICLES; i++){
+        x[i] = malloc(sizeof(double) * (long unsigned int)NUM_VARIABLES);        
+        v[i] = malloc(sizeof(double) * (long unsigned int)NUM_VARIABLES);
+        p[i] = malloc(sizeof(double) * (long unsigned int)NUM_VARIABLES);
+
+        //Check if memory allocation failed
+        if (!x[i] || !v[i] || !p[i]){
+            printf("Memory allocation failed. Exiting program.");
+            exit(1);
+        }
+    }
+
+    //Set best global fitness value to a very large number initially. That way, whatever the first personal fitness value found is, it will become the global fitness value
+    double fgBest = DBL_MAX;
+
+    //INITIALIZATION
+    //Give particles random initial positions, velocities, and personal fitness values
+    for(i=0; i < NUM_PARTICLES; i++){
+        for (j=0; j < NUM_VARIABLES; j++){
+            x[i][j] = random_double(bounds[j].lowerBound, bounds[j].upperBound);
+            v[i][j] = random_double(-1.0, 1.0);
+            p[i][j] = x[i][j];
+        }
+        //Find the personal best fitness value of each particle. If it's better than the global best fitness value, replace it, and the best global position
+        fpBest[i] = objective_function(NUM_VARIABLES, x[i]);
+        if (fpBest[i] < fgBest){
+            fgBest = fpBest[i];
+            for (j=0; j < NUM_VARIABLES; j++){
+                g[j] = p[i][j];
+            }
+        }
+    }
+
+    //PSO Loop
+    int iter; //Iteration counter
+    int stopper = 0; //Counter to stop the loop if the global best fitness value doesn't change for a certain number of iterations (stagnates)
+    double prev_fgBest;
+    int stagnationCounter[NUM_PARTICLES]; //Counter to keep track of how many iterations a particle's personal best fitness value hasn't changed
+    for (iter=0; iter < MAX_ITERATIONS; iter++){
+        prev_fgBest = fgBest;
+
+        //Print out the global best fitness value and position every 1000 iterations
+        if (iter % 1000 == 0){
+            printf("Iteration #%i: OF = %lf\nVariables: { ", iter, fgBest);
+            for (int j = 0; j < NUM_VARIABLES; j++) {
+                printf("%lf ", g[j]);
+            }
+            printf("}\n\n");
+        }
+
+        //Update each particle's position and velocity
+        for (i=0; i < NUM_PARTICLES; i++){
+            for (j=0; j < NUM_VARIABLES; j++){
+                double r1 = random_double(0,1);
+                double r2 = random_double(0,1);
+                //Update velocity
+                v[i][j] = w *v[i][j]+c1*r1*(p[i][j]-x[i][j])+c2*r2*(g[j]-x[i][j]);
+                //Update position
+                x[i][j] += v[i][j];
+                //Clamp x[i][j] within bounds
+                if (x[i][j] < bounds[j].lowerBound) {x[i][j] = bounds[j].lowerBound;}
+                if (x[i][j] > bounds[j].upperBound) {x[i][j] = bounds[j].upperBound;}
+            }
+
+            //Calculate fitness value and compare it with particle's best fitness value. If the current fitness value is better, replace it and the particle's personal best position
+            double f = objective_function(NUM_VARIABLES, x[i]);
+            if (f < fpBest[i]){
+                fpBest[i] = f;
+                for (j=0; j < NUM_VARIABLES; j++){
+                    p[i][j] = x[i][j];
+                }
+                stagnationCounter[i] = 0;
+            } else{
+                stagnationCounter[i]++;
+            }
+
+            //The same thing but for the global best fitness value and position
+            if (f < fgBest){
+                fgBest = f;
+                for (j=0; j < NUM_VARIABLES; j++){
+                    g[j] = x[i][j];
+                }
+            }
+        }
+
+        // Adaptive parameter adjustment based on performance
+        for (i = 0; i < NUM_PARTICLES; i++) {
+            if (stagnationCounter[i] > 100) {
+                // Increase cognitive component to encourage exploration
+                c1 = 2.0;
+                c2 = 1.0;
+            } else {
+                // Reset to default values
+                c1 = 1.5;
+                c2 = 1.5;
+            }
+        }
+
+        //Stopping condition: If the global best fitness value doesn't change for 500 iterations, stop the loop
+        if (fabs(prev_fgBest-fgBest) < 1e-15) {
+            stopper++;
+        } else {
+            stopper = 0;
+        }
+
+        if (stopper == 500) {
+            printf("Stopped at iteration #%i\n", iter + 1);
+            break;
+        }
+    }
+
+    //AFTER PSO LOOP
+    //Save the global best position to the best_position paramter 
+    for (j=0; j < NUM_VARIABLES; j++){
+        best_position[j] = g[j];
+    }
+
+    //Deallocating
+    for (i=0; i < NUM_PARTICLES; i++){
+        free(x[i]);
+        free(v[i]);
+        free(p[i]);
+    }
+
+    free(x);
+    free(v);
+    free(p);
+    free(fpBest);
+    free(g);
+
+    return fgBest;
+}
+	\end{lstlisting}
 	
 \end{document}

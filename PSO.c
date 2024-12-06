@@ -17,7 +17,6 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
     double w = 0.7;
     double c1 = 1.5;
     double c2 = 1.5;
-    double initial_vmax = 0.1 * (bounds->upperBound - bounds->lowerBound);
 
     //Allocate memory for number of particles
     double** x = malloc(sizeof(double*) * (long unsigned int)NUM_PARTICLES);
@@ -75,22 +74,14 @@ double pso(ObjectiveFunction objective_function, int NUM_VARIABLES, Bound *bound
     for (iter=0; iter < MAX_ITERATIONS; iter++){
         prev_fgBest = fgBest;
 
-        //Print out the global best fitness value and position every 100 iterations
-        if (iter % 100 == 0){
+        //Print out the global best fitness value and position every 1000 iterations
+        if (iter % 1000 == 0){
             printf("Iteration #%i: OF = %lf\nVariables: { ", iter, fgBest);
             for (int j = 0; j < NUM_VARIABLES; j++) {
                 printf("%lf ", g[j]);
             }
             printf("}\n\n");
         }
-
-        // Adaptive vmax adjustment
-        double avg_fitness = 0.0;
-        for (i = 0; i < NUM_PARTICLES; i++) {
-            avg_fitness += fpBest[i];
-        }
-        avg_fitness /= NUM_PARTICLES;
-        double vmax = initial_vmax * (1.0 - (fgBest / avg_fitness));
 
         //Update each particle's position and velocity
         for (i=0; i < NUM_PARTICLES; i++){
